@@ -39,6 +39,8 @@
                     <li><a href="/books/list">Show Books</a></li>
                     <li><a href="/login"  sec:authorize="isAnonymous()" >Login</a></li><!--hide after loggin-->
                     <li><a href="/logout" sec:authorize="isAuthenticated()">logout </a></li><!-- only appear after loggin-->
+                    <li><span sec:authorize="isAuthenticated()">Welcome <span sec:authentication="name"></span></span></li>
+
                     <!--<li><a href="/login">Login</a></li>-->
                 </ul>
             </div><!--/.nav-collapse -->

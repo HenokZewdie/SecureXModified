@@ -1,4 +1,4 @@
-package byAJ.Securex.configs;
+package byAJ.Securex.controllers;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -43,10 +43,39 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter{
                 .permitAll();
     }
 
-
+    /*
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
         auth.inMemoryAuthentication().withUser("user").password("password").roles("USER");
     }
+*/
 
+    @Bean
+    public DataSource dataSource(){
+        DriverManagerDataSource dataSource = new DriverManagerDataSource();
+
+        dataSource.setDriverClassName("com.mysql.jdbc.Driver");
+        dataSource.setUrl("jdbc:mysql://localhost:3306/securex?autoReconnect=true&useSSL=false");
+        dataSource.setUsername("root");
+        dataSource.setPassword("password");
+
+        return dataSource;
+    }
+
+    @Bean
+    public DataSourceTransactionManager transactionManager() {
+        DataSourceTransactionManager transactionManager = new
+                DataSourceTransactionManager();
+        transactionManager.setDataSource(dataSource());
+        return transactionManager;
+    }
+    @Autowired
+    public void configure(AuthenticationManagerBuilder auth) throws Exception{
+        auth.jdbcAuthentication()
+                .dataSource(dataSource())
+                .usersByUsernameQuery(
+                        "select username,password,enabled from users where username=?")
+                .authoritiesByUsernameQuery(
+                        "select username, authority from authorities where username=?");
+    }
 }
